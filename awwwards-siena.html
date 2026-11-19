@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4ead9">
+  <meta name="description" content="Малышев Андрей Максимович, Data Engineer. Результаты работы с интеграциями, Spark и корпоративными хранилищами.">
+  <title>Андрей Малышев — Data Engineer</title>
+  <style>
+    :root {
+      --paper: #f4ead9;
+      --ink: #291b19;
+      --muted: #61504b;
+      --wine: #671e2b;
+      --deep: #4f1420;
+      --cream: #fff5de;
+      --line: #c8b5a6;
+      --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      --gutter: clamp(1.15rem, 4.7vw, 5rem);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font: 1rem/1.55 system-ui, sans-serif; }
+    h1, h2, h3, p, figure, dl, dd { margin: 0; }
+    a { color: inherit; }
+    a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+    .wrap { width: min(82rem, calc(100% - 2 * var(--gutter))); margin-inline: auto; }
+    .skip { position: absolute; z-index: 2; inset: .65rem auto auto .65rem; padding: .6rem .85rem; background: var(--cream); transform: translateY(-160%); }
+    .skip:focus { transform: none; }
+    .mast { min-height: 4.8rem; display: flex; align-items: center; justify-content: space-between; gap: .8rem; border-bottom: 1px solid var(--ink); }
+    .mast p { font: 600 .875rem/1.4 var(--mono); }
+    nav { display: flex; gap: clamp(.75rem, 2.7vw, 2.5rem); flex-shrink: 0; }
+    nav a { min-height: 2.75rem; display: inline-flex; align-items: center; font-size: .9375rem; text-decoration: none; }
+    nav a:hover { color: var(--wine); text-decoration: underline; text-underline-offset: .25em; }
+
+    .opening { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); align-items: stretch; gap: clamp(1.5rem, 4vw, 5rem); padding-block: clamp(2.75rem, 5vw, 5.25rem); }
+    .lead { align-self: center; }
+    .role { color: var(--wine); font: 600 .875rem/1.4 var(--mono); letter-spacing: .07em; text-transform: uppercase; }
+    h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; }
+    h1 { margin: .7rem 0 1.35rem -.055em; font-size: clamp(4rem, 9vw, 9.4rem); line-height: .82; letter-spacing: -.084em; }
+    h1 em { display: block; color: var(--wine); font-weight: 400; letter-spacing: -.075em; }
+    .lead > p:last-of-type { max-width: 30rem; color: var(--muted); font-size: clamp(1.0625rem, 1.5vw, 1.2rem); text-wrap: pretty; }
+    .button { display: inline-flex; min-height: 3.4rem; padding: .68rem 1.2rem; align-items: center; justify-content: center; background: var(--wine); color: var(--cream); font-weight: 655; text-decoration: none; }
+    .lead .button { margin-top: 1.35rem; }
+    .button:hover { background: var(--deep); }
+    .button:focus-visible { outline-color: var(--wine); }
+
+    .poster {
+      --edge: clamp(.8rem, 2vw, 1.5rem);
+      position: relative;
+      display: grid;
+      align-content: center;
+      gap: clamp(1.1rem, 2vw, 1.85rem);
+      min-height: clamp(16.75rem, 31vw, 27rem);
+      overflow: hidden;
+      padding: clamp(1.75rem, 4.6vw, 4.4rem);
+      border-inline: var(--edge) solid var(--deep);
+      background:
+        repeating-linear-gradient(165deg, transparent 0 9px, #ffe3a909 9px 10px),
+        radial-gradient(ellipse at 80% 14%, #9a3841, transparent 75%),
+        var(--wine);
+      color: var(--cream);
+    }
+    .poster::before, .poster::after {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      width: .35rem;
+      background: repeating-linear-gradient(transparent 0 10px, #f4ead9b5 10px 17px, transparent 17px 24px);
+    }
+    .poster::before { left: .25rem; }
+    .poster::after { right: .25rem; }
+    .poster figcaption { color: var(--cream); font: .875rem/1.4 var(--mono); }
+    .poster-time { display: flex; align-items: baseline; gap: .12em; font: 400 clamp(2.65rem, 6.4vw, 7.2rem)/.95 Georgia, serif; letter-spacing: -.07em; white-space: nowrap; }
+    .poster-time span { font: 500 .3em/1 var(--mono); letter-spacing: -.07em; }
+    .delivery { display: grid; gap: .5rem; }
+    .delivery span { display: block; height: .44rem; background: #d78b87; transform-origin: left; }
+    .delivery .after { width: 41.6667%; background: var(--cream); animation: bar-in 780ms cubic-bezier(.2,.65,.2,1) both; }
+    @keyframes bar-in { from { transform: scaleX(.1); } to { transform: scaleX(1); } }
+
+    .totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--ink); }
+    .totals > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: .4rem; padding: 1.1rem clamp(.7rem, 2.1vw, 1.8rem) 1.3rem; }
+    .totals > div + div { border-left: 1px solid var(--line); }
+    .totals > div:first-child { padding-left: 0; }
+    .totals dd { color: var(--wine); font: 400 clamp(1.95rem, 4.85vw, 4.6rem)/1 Georgia, serif; letter-spacing: -.08em; }
+    .totals dd span { font: 500 .38em/1 var(--mono); letter-spacing: -.05em; }
+    .totals dt { color: var(--muted); font-size: .9375rem; line-height: 1.36; text-wrap: pretty; }
+    section[id], footer { scroll-margin-block-start: 1.25rem; }
+    h2 { font-size: clamp(2.5rem, 6.8vw, 6.2rem); line-height: .95; letter-spacing: -.078em; }
+    .cases { padding-block-start: clamp(3.25rem, 8vw, 7rem); }
+    .cases h2 { margin-bottom: 1.4rem; }
+    .case { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 3fr) minmax(0, 1.15fr); align-items: baseline; gap: .65rem clamp(.75rem, 3.1vw, 2.75rem); padding-block: clamp(1.1rem, 3vw, 2rem); border-top: 1px solid var(--line); }
+    .case:last-child { border-bottom: 1px solid var(--line); }
+    .case .type { color: var(--wine); font: 500 .875rem/1.4 var(--mono); }
+    .case h3 { margin-bottom: .35rem; font-size: clamp(1.18rem, 2vw, 1.5rem); line-height: 1.18; letter-spacing: -.032em; text-wrap: balance; }
+    .case .description, .stack p { color: var(--muted); text-wrap: pretty; }
+    .case .metric { text-align: right; color: var(--wine); font: 400 clamp(1.7rem, 4vw, 3.6rem)/1 Georgia, serif; letter-spacing: -.075em; white-space: nowrap; }
+    .metric span { font: 500 .42em/1 var(--mono); letter-spacing: 0; }
+    .stack { display: grid; grid-template-columns: minmax(0, .55fr) minmax(0, 1.45fr); gap: 1rem 2rem; padding-block: clamp(3rem, 7.5vw, 6.5rem); }
+    .stack p { max-width: 42rem; }
+    .stack p + p { margin-top: .55rem; }
+    footer { background: var(--wine); color: var(--cream); }
+    .contact { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 1.4rem 2rem; padding-block: clamp(2.65rem, 7vw, 5rem); }
+    .contact p { margin-top: .8rem; color: #f2d9d2; }
+    .contact .button { background: var(--cream); color: var(--deep); }
+    .contact .button:hover { background: #f3deac; }
+    .contact .button:focus-visible { outline-color: var(--cream); }
+    @media (max-width: 49rem) {
+      .opening { grid-template-columns: 1fr; }
+      h1 { font-size: clamp(4rem, 14vw, 7.75rem); }
+      .poster-time { font-size: clamp(3.8rem, 11vw, 6.5rem); }
+      .case { grid-template-columns: minmax(0, 1fr) auto; }
+      .case .type { grid-column: 1 / -1; }
+      .case h3 { text-wrap: initial; }
+    }
+    @media (max-width: 34rem) {
+      .mast p, nav a { font-size: .8125rem; }
+      .totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .totals > div:nth-child(odd) { padding-left: 0; border-left: 0; }
+      .totals > div:nth-child(n + 3) { border-top: 1px solid var(--line); }
+      .case { grid-template-columns: 1fr; }
+      .case .metric { text-align: left; }
+      .stack { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .delivery .after { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">К содержанию</a>
+  <header class="mast wrap">
+    <p>Малышев Андрей Максимович</p>
+    <nav aria-label="Разделы">
+      <a href="#cases">Кейсы</a><a href="#stack">Стек</a><a href="#contact">Контакт</a>
+    </nav>
+  </header>
+
+  <main id="main" class="wrap" tabindex="-1">
+    <section class="opening" aria-labelledby="headline">
+      <div class="lead">
+        <p class="role" lang="en">Data Engineer</p>
+        <h1 id="headline">Данные <em>вовремя.</em></h1>
+        <p>Разрабатываю пакетные и потоковые пайплайны. Помогаю командам получать данные раньше и восстанавливать загрузки после сбоев.</p>
+        <a class="button" href="https://t.me/malyshevamwork">Написать в Telegram</a>
+      </div>
+
+      <figure class="poster">
+        <figcaption>Среднее время доставки веб-аналитики</figcaption>
+        <div class="poster-time">12 → 5 <span>ч</span></div>
+        <div class="delivery" aria-hidden="true"><span></span><span class="after"></span></div>
+      </figure>
+    </section>
+
+    <dl class="totals" aria-label="Опыт в цифрах">
+      <div><dt>опыта в разработке</dt><dd>3+ <span>года</span></dd></div>
+      <div><dt>новых интеграций с источниками</dt><dd>8+</dd></div>
+      <div><dt>суммарный shuffle в трёх оптимизированных Spark-задачах</dt><dd>30+ <span>ТБ</span></dd></div>
+      <div><dt>к объёму и стоимости хранения данных</dt><dd>−20%</dd></div>
+    </dl>
+
+    <section class="cases" id="cases" aria-labelledby="cases-title">
+      <h2 id="cases-title">Избранные работы</h2>
+      <article class="case">
+        <p class="type">Веб-аналитика</p>
+        <div><h3>Данные стали доступны на сутки раньше</h3><p class="description">Переработал загрузку событий веб-аналитики в корпоративное хранилище.</p></div>
+        <p class="metric">1+ <span>ТБ/сутки</span></p>
+      </article>
+      <article class="case">
+        <p class="type">Качество данных</p>
+        <div><h3>Быстрее обнаруживали и устраняли инциденты</h3><p class="description">Добавил проверки качества в восьми интеграциях по всему пути данных от источника до витрины.</p></div>
+        <p class="metric">−40%</p>
+      </article>
+      <article class="case">
+        <p class="type">Airflow</p>
+        <div><h3>Ускорил типовую перезагрузку истории</h3><p class="description">Создал инструмент для повторных загрузок. Dynamic Task Mapping формирует задачи на нужные периоды автоматически.</p></div>
+        <p class="metric">5 → 1 <span>раб. день</span></p>
+      </article>
+      <article class="case">
+        <p class="type">Spark</p>
+        <div><h3>Меньше памяти на исполнителях</h3><p class="description">Оптимизировал конфигурации Spark-задач. В отдельном проекте устранил перекос данных и сброс на диск с помощью AQE, стратегий соединения и партиционирования.</p></div>
+        <p class="metric">−30%</p>
+      </article>
+    </section>
+
+    <section class="stack" id="stack" aria-labelledby="stack-title">
+      <h2 id="stack-title">Стек</h2>
+      <div>
+        <p>Python, SQL, Bash, Apache Spark, PySpark, Airflow и Kafka.</p>
+        <p>Hadoop, Hive, Greenplum, PostgreSQL, Docker и GitLab CI/CD.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div class="contact wrap">
+      <div><h2>Обсудим вакансию?</h2><p>Расскажите о задачах команды. На собеседовании разберём, где мой опыт пригодится.</p></div>
+      <a class="button" href="https://t.me/malyshevamwork">Написать в Telegram</a>
+    </div>
+  </footer>
+</body>
+</html>

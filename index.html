@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f2">
+  <meta name="description" content="Малышев Андрей Максимович, Data Engineer. Пакетные и потоковые интеграции, оптимизация Spark, качество данных и автоматизация на Airflow.">
+  <title>Андрей Малышев — Data Engineer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f6f2;
+      --ink: #171919;
+      --muted: #535951;
+      --line: #d2d6ce;
+      --blue: #2342ed;
+      --blue-dark: #1430c8;
+      --ice: #e9edff;
+      --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --gutter: clamp(1.125rem, 4.5vw, 4.5rem);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 1rem/1.5 "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, p, figure, dl, dd { margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 5px;
+    }
+    .wrap { width: min(calc(100% - 2 * var(--gutter)), 80rem); margin-inline: auto; }
+    .skip-link {
+      position: fixed;
+      z-index: 2;
+      top: .75rem;
+      left: .75rem;
+      padding: .65rem 1rem;
+      color: white;
+      background: var(--ink);
+      transform: translateY(-160%);
+    }
+    .skip-link:focus { transform: none; }
+
+    .masthead {
+      min-height: 4.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .mark {
+      display: grid;
+      place-items: center;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      background: var(--ink);
+      color: white;
+      font-size: .95rem;
+      font-weight: 700;
+      letter-spacing: -.06em;
+    }
+    .mark b { color: #b9c6ff; }
+    .masthead nav { display: flex; align-items: center; gap: clamp(1rem, 3.2vw, 3rem); }
+    .masthead nav a {
+      display: inline-flex;
+      min-height: 2.75rem;
+      align-items: center;
+      font-size: .9375rem;
+      font-weight: 600;
+    }
+    .masthead nav a:hover { color: var(--blue); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.11fr) minmax(0, 1fr);
+      align-items: stretch;
+      gap: clamp(1.5rem, 3.2vw, 3.5rem);
+      padding-block: clamp(2.75rem, 5vw, 4.5rem) clamp(2.25rem, 4.5vw, 4rem);
+    }
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding-block: .4rem;
+    }
+    .name {
+      font: 500 .875rem/1.5 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .035em;
+    }
+    h1 {
+      margin: .9rem 0 1.35rem -.063em;
+      font-size: clamp(4.6rem, 9.3vw, 9.4rem);
+      font-weight: 700;
+      line-height: .825;
+      letter-spacing: -.092em;
+    }
+    h1 span { display: block; }
+    h1 b { color: var(--blue); }
+    .lede {
+      max-width: 30rem;
+      color: var(--muted);
+      font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+      line-height: 1.48;
+      text-wrap: pretty;
+    }
+    .button {
+      display: inline-flex;
+      min-height: 3.5rem;
+      align-items: center;
+      justify-content: center;
+      gap: .65rem;
+      padding: .8rem 1.25rem;
+      background: var(--blue);
+      color: white;
+      font-weight: 650;
+      line-height: 1.25;
+      transition: background-color 160ms ease, color 160ms ease;
+    }
+    .button:hover { background: var(--blue-dark); }
+    .hero .button { margin-top: 1.65rem; }
+
+    .pipeline {
+      --figure-pad: clamp(1rem, 2.25vw, 2rem);
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: clamp(24.5rem, 38vw, 33.5rem);
+      padding: var(--figure-pad);
+      overflow: hidden;
+      background-color: var(--blue);
+      background-image:
+        linear-gradient(90deg, #ffffff15 1px, transparent 1px),
+        linear-gradient(#ffffff15 1px, transparent 1px),
+        radial-gradient(ellipse at 51% 45%, #516bfb, transparent 73%),
+        linear-gradient(150deg, #2c48ed, #1938da);
+      background-size: 30px 30px, 30px 30px, auto, auto;
+      color: white;
+    }
+    .pipeline figcaption {
+      justify-self: start;
+      padding: .35rem .6rem;
+      border: 1px solid #dce3ff75;
+      background: #2141df;
+      font: .8125rem/1.4 var(--mono);
+    }
+    .plot { position: relative; min-height: 0; }
+    .plot canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .stages {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(.32rem, 1vw, .75rem);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .stages li {
+      padding-top: .55rem;
+      border-top: 1px solid #dce3ff75;
+      font: .8125rem/1.35 var(--mono);
+    }
+
+    .figures {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-block: 1px solid var(--line);
+    }
+    .figures > div {
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: flex-end;
+      gap: .42rem;
+      padding: 1.3rem clamp(.8rem, 2.6vw, 2.25rem) 1.45rem;
+    }
+    .figures > div + div { border-left: 1px solid var(--line); }
+    .figures > div:first-child { padding-left: 0; }
+    .figures dt { max-width: 18rem; color: var(--muted); line-height: 1.33; text-wrap: pretty; }
+    .figures dd {
+      font-size: clamp(2rem, 4.4vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -.078em;
+      line-height: 1;
+    }
+    .figures dd span { font-size: .47em; letter-spacing: -.03em; }
+
+    section[id], footer[id] { scroll-margin-top: 1.5rem; }
+    .section { padding-top: clamp(3.6rem, 8vw, 7.5rem); }
+    .section h2, .contact h2 {
+      font-size: clamp(2.45rem, 5.5vw, 5.25rem);
+      font-weight: 700;
+      line-height: .99;
+      letter-spacing: -.076em;
+      text-wrap: balance;
+    }
+    .section h2 { margin-bottom: clamp(1.35rem, 3vw, 2.4rem); }
+    .cases {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .case {
+      min-width: 0;
+      padding: clamp(1.2rem, 3.25vw, 2.85rem);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .case.featured {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: minmax(0, 1fr) minmax(0, .93fr);
+      align-items: center;
+      gap: clamp(1.5rem, 6vw, 5rem);
+    }
+    .case h3 {
+      margin: .75rem 0 .65rem;
+      font-size: clamp(1.6rem, 2.8vw, 2.65rem);
+      line-height: 1.05;
+      letter-spacing: -.058em;
+      text-wrap: balance;
+    }
+    .case .copy {
+      max-width: 36rem;
+      color: var(--muted);
+      font-size: 1.0625rem;
+      line-height: 1.5;
+      text-wrap: pretty;
+    }
+    .eyebrow {
+      color: var(--blue-dark);
+      font: 500 .875rem/1.4 var(--mono);
+    }
+    .case .result {
+      margin-top: 1.3rem;
+      color: var(--blue-dark);
+      font-size: clamp(2.9rem, 5.6vw, 5.25rem);
+      font-weight: 700;
+      letter-spacing: -.075em;
+      line-height: 1;
+    }
+    .case .result-note { margin-top: .35rem; color: var(--muted); }
+    .chart {
+      display: grid;
+      gap: 1.05rem;
+      align-content: center;
+      padding: clamp(1rem, 2.5vw, 2rem);
+      min-height: 13rem;
+      background-color: var(--ice);
+    }
+    .chart figcaption {
+      font: 500 .875rem/1.4 var(--mono);
+      color: #303961;
+    }
+    .chart-row {
+      display: grid;
+      grid-template-columns: 3.25rem minmax(0, 1fr) 2.7rem;
+      align-items: center;
+      gap: .6rem;
+    }
+    .chart-row strong { text-align: right; white-space: nowrap; }
+    .track {
+      height: .8rem;
+      background: #d7def9;
+    }
+    .bar { display: block; height: 100%; background: #7c8eea; }
+    .bar.after { width: 41.6667%; background: var(--blue); }
+
+    .stack {
+      display: grid;
+      grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+      gap: clamp(1.25rem, 5vw, 5rem);
+      align-items: start;
+      padding-bottom: clamp(3.8rem, 8vw, 7.5rem);
+    }
+    .stack h2 { text-wrap: initial; }
+    .stack p {
+      max-width: 28rem;
+      color: var(--muted);
+      font-size: 1.0625rem;
+      text-wrap: pretty;
+    }
+    .stack p + p { margin-top: .75rem; }
+    .stack dl > div {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+      align-items: baseline;
+      gap: .65rem 1rem;
+      padding-block: 1rem;
+      border-top: 1px solid var(--line);
+    }
+    .stack dl > div:last-child { border-bottom: 1px solid var(--line); }
+    .stack dt { color: var(--muted); }
+    .stack dd { font-weight: 650; }
+
+    .contact { background: var(--blue); color: white; }
+    .contact-inner {
+      padding-block: clamp(2.5rem, 7vw, 6.25rem);
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) auto;
+      align-items: end;
+      gap: 1.5rem 3rem;
+    }
+    .contact h2 { max-width: 45rem; }
+    .contact p { margin-top: 1.15rem; max-width: 34rem; color: #e5eaff; font-size: 1.0625rem; }
+    .contact .button { min-height: 3.65rem; background: white; color: var(--blue-dark); }
+    .contact .button:hover { background: #dfe6ff; }
+    .contact a:focus-visible { outline-color: white; }
+
+    @media (max-width: 52rem) {
+      .hero { grid-template-columns: minmax(0, 1fr); }
+      h1 { font-size: clamp(4rem, 14.3vw, 8rem); }
+      .pipeline { min-height: clamp(19.5rem, 65vw, 30rem); }
+      .stack { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 37rem) {
+      .masthead { min-height: 4rem; }
+      .name { font-size: .8125rem; }
+      .hero { padding-top: 2.55rem; }
+      h1 { font-size: clamp(3.4rem, 15.5vw, 5.5rem); }
+      .figures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .figures > div { padding-block: 1.05rem; padding-inline: .65rem; }
+      .figures > div:nth-child(odd) { padding-left: 0; border-left: 0; }
+      .figures > div:nth-child(n + 3) { border-top: 1px solid var(--line); }
+      .figures dt { font-size: .875rem; overflow-wrap: anywhere; }
+      .figures dd { font-size: clamp(1.7rem, 7.6vw, 2.7rem); }
+      .cases, .case.featured, .contact-inner { grid-template-columns: 1fr; }
+      .contact .button { justify-self: start; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .button { transition: none; }
+    }
+    @media print {
+      .masthead, .pipeline, .skip-link { display: none; }
+      .hero, .case.featured, .stack, .contact-inner { display: block; }
+      h1 { font-size: 4rem; }
+      .section { padding-top: 1.5rem; }
+      .case, .figures, .chart { break-inside: avoid; }
+      .contact, .contact p, .button { color: var(--ink); background: transparent; }
+      .contact .button::after { content: " (" attr(href) ")"; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">К содержанию</a>
+  <header class="masthead wrap">
+    <a class="mark" href="#main" aria-label="Андрей Малышев, начало страницы"><span>АМ<b>.</b></span></a>
+    <nav aria-label="Разделы страницы">
+      <a href="#cases">Кейсы</a>
+      <a href="#stack">Стек</a>
+      <a href="#contact">Контакт</a>
+    </nav>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <div class="wrap">
+      <section class="hero" aria-labelledby="role">
+        <div class="hero-copy">
+          <p class="name">Малышев Андрей Максимович</p>
+          <h1 id="role" lang="en"><span>Data</span> <span>Engineer<b aria-hidden="true">.</b></span></h1>
+          <p class="lede">Строю и сопровождаю пакетные и потоковые пайплайны. Помогаю командам получать данные раньше и быстрее восстанавливать загрузки после сбоев.</p>
+          <a class="button" href="https://t.me/malyshevamwork">Написать в Telegram</a>
+        </div>
+
+        <figure class="pipeline">
+          <figcaption>От источника до витрины</figcaption>
+          <div class="plot"><canvas id="pipeline-plot" aria-hidden="true"></canvas></div>
+          <ol class="stages">
+            <li>Источники</li>
+            <li>Обработка</li>
+            <li>Витрины</li>
+          </ol>
+        </figure>
+      </section>
+
+      <dl class="figures" aria-label="Опыт в цифрах">
+        <div>
+          <dt>в разработке</dt>
+          <dd>3+ <span>года</span></dd>
+        </div>
+        <div>
+          <dt>новых интеграций с источниками</dt>
+          <dd>8+</dd>
+        </div>
+        <div>
+          <dt>суммарный shuffle в трёх оптимизированных Spark-задачах</dt>
+          <dd>30+ <span>ТБ</span></dd>
+        </div>
+        <div>
+          <dt>к объёму и стоимости хранения данных</dt>
+          <dd>−20%</dd>
+        </div>
+      </dl>
+
+      <section class="section" id="cases" aria-labelledby="cases-title">
+        <h2 id="cases-title">Избранные кейсы</h2>
+        <div class="cases">
+          <article class="case featured">
+            <div>
+              <p class="eyebrow">Веб-аналитика</p>
+              <h3>Данные за вчера стали доступны на день раньше</h3>
+              <p class="copy">Переработал пайплайн загрузки событий веб-аналитики в корпоративное хранилище. Суточный объём превышал 1 ТБ.</p>
+            </div>
+            <figure class="chart">
+              <figcaption>Среднее время доставки</figcaption>
+              <div class="chart-row"><span>До</span><span class="track" aria-hidden="true"><span class="bar"></span></span><strong>12 ч</strong></div>
+              <div class="chart-row"><span>После</span><span class="track" aria-hidden="true"><span class="bar after"></span></span><strong>5 ч</strong></div>
+            </figure>
+          </article>
+
+          <article class="case">
+            <p class="eyebrow">Качество данных</p>
+            <h3>Проверки на пути от источника до витрины</h3>
+            <p class="copy">Добавил проверки качества данных в восемь интеграций.</p>
+            <p class="result">−40%</p>
+            <p class="result-note">к времени обнаружения и устранения инцидентов</p>
+          </article>
+
+          <article class="case">
+            <p class="eyebrow">Airflow</p>
+            <h3>Автоматическая перезагрузка истории</h3>
+            <p class="copy">Сделал инструмент на Airflow Dynamic Task Mapping, который формирует задачи для перезагрузки прошлых периодов.</p>
+            <p class="result">5 → 1</p>
+            <p class="result-note">срок типовой перезагрузки в рабочих днях</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section stack" id="stack" aria-labelledby="stack-title">
+        <div>
+          <h2 id="stack-title">С чем работаю</h2>
+          <p>Работал с корпоративными хранилищами в телекоме и банковскими системами.</p>
+          <p>Оптимизировал задачи Spark с перекосом данных и сбросом на диск. Менял стратегии соединения и разбиение на партиции. Отдельно настроил конфигурации Spark-задач и снизил расход памяти исполнителей на 30%.</p>
+        </div>
+        <dl>
+          <div>
+            <dt>Разработка</dt>
+            <dd>Python, SQL, Bash</dd>
+          </div>
+          <div>
+            <dt>Обработка и загрузка</dt>
+            <dd>Apache Spark, PySpark, Airflow, Kafka</dd>
+          </div>
+          <div>
+            <dt>Хранение</dt>
+            <dd>Hadoop, Hive, Greenplum, PostgreSQL</dd>
+          </div>
+          <div>
+            <dt>Тесты и поставка</dt>
+            <dd>Docker, GitLab CI/CD</dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+  </main>
+
+  <footer class="contact" id="contact">
+    <div class="contact-inner wrap">
+      <div>
+        <h2>Обсудим вашу вакансию?</h2>
+        <p>Расскажите, какие задачи стоят перед командой. На собеседовании смогу подробнее разобрать решения из этих кейсов.</p>
+      </div>
+      <a class="button" href="https://t.me/malyshevamwork">Написать в Telegram</a>
+    </div>
+  </footer>
+
+  <script>
+    const canvas = document.querySelector("#pipeline-plot");
+    const context = canvas.getContext("2d");
+
+    function drawPipeline() {
+      if (!context) return;
+
+      const { width, height } = canvas.getBoundingClientRect();
+      if (!width || !height) return;
+
+      const density = Math.min(window.devicePixelRatio || 1, 3);
+      canvas.width = Math.round(width * density);
+      canvas.height = Math.round(height * density);
+
+      const scale = Math.min(width / 456, height / 360) * density;
+      context.setTransform(scale, 0, 0, scale, canvas.width / 2, canvas.height / 2);
+      context.lineWidth = 1;
+
+      const edge = 8;
+      const project = ([x, y, layer]) => [(x - y) * 12.5, (x + y) * 5.5 - layer * 68];
+      const corners = [[-edge, -edge], [edge, -edge], [edge, edge], [-edge, edge]];
+
+      function trace(points) {
+        context.beginPath();
+        points.forEach((point, index) => {
+          const [x, y] = project(point);
+          if (index === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
+        });
+      }
+
+      function line(points, color, weight = 1) {
+        trace(points);
+        context.strokeStyle = color;
+        context.lineWidth = weight;
+        context.stroke();
+      }
+
+      function node(point, radius, color) {
+        const [x, y] = project(point);
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fillStyle = color;
+        context.fill();
+      }
+
+      for (const layer of [-1, 0, 1]) {
+        if (layer > -1) {
+          context.setLineDash([3, 5]);
+          for (const [x, y] of corners) {
+            line([[x, y, layer - 1], [x, y, layer]], "#e6edff69");
+          }
+          context.setLineDash([]);
+        }
+
+        trace(corners.map(([x, y]) => [x, y, layer]));
+        context.closePath();
+        context.fillStyle = layer === 1 ? "#6b83ff32" : "#1b33ba48";
+        context.fill();
+        context.strokeStyle = "#e6edffad";
+        context.lineWidth = 1;
+        context.stroke();
+
+        for (let i = -edge + 2; i < edge; i += 2) {
+          line([[i, -edge, layer], [i, edge, layer]], "#deebff59", 0.75);
+          line([[-edge, i, layer], [edge, i, layer]], "#deebff59", 0.75);
+        }
+
+        for (const [x, y] of corners) {
+          node([x, y, layer], 2.25, "#c3d2ff");
+        }
+      }
+
+      const route = [
+        [-6, 6, -1], [-6, 2, -1], [-2, 2, -1], [-2, 2, 0],
+        [-2, -2, 0], [2, -2, 0], [2, -2, 1], [5, -2, 1], [5, -6, 1]
+      ];
+      context.lineCap = "round";
+      context.lineJoin = "round";
+      line(route, "#b7c8ff51", 8);
+      line(route, "#f4f7ff", 2.25);
+
+      for (const point of [route[0], route[3], route[6], route.at(-1)]) {
+        node(point, 7, "#bbcbff56");
+        node(point, 3.8, "#ffffff");
+      }
+    }
+
+    drawPipeline();
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(drawPipeline).observe(canvas);
+    } else {
+      window.addEventListener("resize", drawPipeline);
+    }
+  </script>
+</body>
+</html>

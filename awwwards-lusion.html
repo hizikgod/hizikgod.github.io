@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10191f">
+  <meta name="description" content="Малышев Андрей Максимович, Data Engineer. Пайплайны, качество данных и оптимизация Spark.">
+  <title>Андрей Малышев — Data Engineer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --base: #10191f;
+      --surface: #15252b;
+      --ink: #edf7f4;
+      --soft: #afc2c2;
+      --line: #345052;
+      --mint: #a7f1ce;
+      --dark: #10241f;
+      --gutter: clamp(1.15rem, 4.7vw, 5rem);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--base); color: var(--ink); font: 1rem/1.55 system-ui, sans-serif; }
+    h1, h2, h3, p, dl, dd, figure { margin: 0; }
+    a { color: inherit; }
+    a:focus-visible { outline: 2px solid var(--mint); outline-offset: 5px; }
+    .wrap { width: min(82rem, calc(100% - 2 * var(--gutter))); margin-inline: auto; }
+    .skip { position: absolute; z-index: 2; inset: .6rem auto auto .6rem; background: var(--base); padding: .6rem .85rem; transform: translateY(-160%); }
+    .skip:focus { transform: none; }
+    .mast { min-height: 4.75rem; display: flex; align-items: center; justify-content: space-between; gap: .8rem; border-bottom: 1px solid var(--line); }
+    .mast p { font-size: .9375rem; font-weight: 620; line-height: 1.35; }
+    nav { display: flex; gap: clamp(.72rem, 3vw, 2.15rem); flex-shrink: 0; }
+    nav a { display: inline-flex; align-items: center; min-height: 2.75rem; color: var(--soft); font-size: .9375rem; text-decoration: none; }
+    nav a:hover { color: var(--mint); }
+    .hero { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, .91fr) minmax(0, 1.09fr); align-items: center; min-height: clamp(27rem, 40vw, 37rem); padding-block: clamp(2.75rem, 4.9vw, 5rem); }
+    .hero-copy { z-index: 1; }
+    h1 {
+      margin: 0 0 1.2rem -.07em;
+      font-size: clamp(4.4rem, 9.5vw, 9.7rem);
+      font-weight: 590;
+      line-height: .82;
+      letter-spacing: -.07em;
+    }
+    h1 span { display: block; color: var(--mint); }
+    .lede { max-width: 28rem; color: var(--soft); font-size: clamp(1.0625rem, 1.65vw, 1.24rem); text-wrap: pretty; }
+    .button { display: inline-flex; min-height: 3.45rem; justify-content: center; align-items: center; border-radius: 50rem; padding: .7rem 1.3rem; background: var(--mint); color: var(--dark); font-weight: 675; text-decoration: none; }
+    .button:hover { background: #d0fbe5; }
+    .hero .button { margin-top: 1.35rem; }
+    .art {
+      position: relative;
+      align-self: stretch;
+      min-height: 23rem;
+      margin-inline: -9% -3%;
+      background: radial-gradient(ellipse at center, #1d454440 0%, #15363626 49%, transparent 70%);
+    }
+    .art canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+
+    .totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--line); }
+    .totals > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: .5rem; padding: 1.25rem clamp(.7rem, 2.4vw, 1.8rem) 1.4rem; }
+    .totals > div + div { border-inline-start: 1px solid var(--line); }
+    .totals > div:first-child { padding-inline-start: 0; }
+    .totals dd { font-size: clamp(2rem, 4.6vw, 4.2rem); line-height: 1; letter-spacing: -.075em; font-weight: 590; font-variant-numeric: tabular-nums; }
+    .totals dd span, .metric span { font-size: .46em; letter-spacing: -.025em; }
+    .totals dt { color: var(--soft); font-size: .9375rem; line-height: 1.36; text-wrap: pretty; }
+    section[id], footer { scroll-margin-block-start: 1.25rem; }
+    h2 { font-size: clamp(2.4rem, 5.7vw, 5.45rem); font-weight: 575; letter-spacing: -.082em; line-height: .97; text-wrap: balance; }
+    .cases { padding-block-start: clamp(3rem, 8vw, 7rem); }
+    .cases h2 { margin-bottom: 1.6rem; }
+    .case-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(.6rem, 2vw, 1rem); }
+    .case {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-height: 15rem;
+      padding: clamp(1.25rem, 3vw, 2.55rem);
+      border: 1px solid var(--line);
+      border-radius: 1.1rem;
+      background: var(--surface);
+    }
+    .case:first-child { background: #1d393c; }
+    .case h3 { margin-bottom: .45rem; font-size: clamp(1.22rem, 2.5vw, 1.8rem); line-height: 1.14; letter-spacing: -.034em; text-wrap: pretty; }
+    .case .description { max-width: 35rem; color: var(--soft); text-wrap: pretty; }
+    .case .metric { margin-top: auto; padding-top: 1.35rem; color: var(--mint); font-size: clamp(2.15rem, 5.1vw, 4.7rem); font-weight: 550; line-height: 1; letter-spacing: -.075em; white-space: nowrap; }
+    .stack { display: grid; grid-template-columns: minmax(0, .6fr) minmax(0, 1.4fr); gap: 1rem 2rem; padding-block: clamp(3rem, 8vw, 7rem); }
+    .stack p { color: var(--soft); text-wrap: pretty; }
+    .stack p + p { margin-top: .5rem; }
+    footer { border-top: 1px solid var(--line); background: #17282c; }
+    .contact { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 1.4rem 2rem; padding-block: clamp(2.7rem, 7vw, 5.4rem); }
+    .contact p { margin-top: .85rem; color: var(--soft); }
+    @media (max-width: 50rem) {
+      .hero { grid-template-columns: 1fr; padding-block-end: 1rem; }
+      h1 { font-size: clamp(4rem, 13vw, 7.5rem); }
+      .art { min-height: clamp(18rem, 63vw, 28rem); margin-inline: 0; }
+    }
+    @media (max-width: 35rem) {
+      .mast p, nav a { font-size: .875rem; }
+      .totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .totals > div:nth-child(odd) { padding-inline-start: 0; border-inline-start: 0; }
+      .totals > div:nth-child(n + 3) { border-top: 1px solid var(--line); }
+      .case-grid, .stack { grid-template-columns: 1fr; }
+      .case { min-height: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">К содержанию</a>
+  <header class="mast wrap">
+    <p>Малышев Андрей Максимович</p>
+    <nav aria-label="Разделы"><a href="#cases">Кейсы</a><a href="#stack">Стек</a><a href="#contact">Контакт</a></nav>
+  </header>
+
+  <main id="main" class="wrap" tabindex="-1">
+    <section class="hero" aria-labelledby="role">
+      <div class="hero-copy">
+        <h1 id="role" lang="en">Data <span>Engineer</span></h1>
+        <p class="lede">Строю пакетные и потоковые пайплайны. Ускоряю доставку данных, внедряю проверки качества и автоматизирую повторные загрузки.</p>
+        <a class="button" href="https://t.me/malyshevamwork">Написать в Telegram</a>
+      </div>
+      <figure class="art" aria-hidden="true"><canvas id="flow"></canvas></figure>
+    </section>
+
+    <dl class="totals" aria-label="Опыт в цифрах">
+      <div><dt>опыта в разработке</dt><dd>3+ <span>года</span></dd></div>
+      <div><dt>новых интеграций с источниками</dt><dd>8+</dd></div>
+      <div><dt>суммарный shuffle в трёх оптимизированных Spark-задачах</dt><dd>30+ <span>ТБ</span></dd></div>
+      <div><dt>к объёму и стоимости хранения данных</dt><dd>−20%</dd></div>
+    </dl>
+
+    <section class="cases" id="cases" aria-labelledby="cases-title">
+      <h2 id="cases-title">Результаты в проектах</h2>
+      <div class="case-grid">
+        <article class="case">
+          <h3>Ускорил доставку веб-аналитики</h3>
+          <p class="description">Переработал загрузку событий объёмом более 1 ТБ в сутки. Данные за предыдущий день стали доступны на сутки раньше.</p>
+          <p class="metric">12 → 5 <span>ч в среднем</span></p>
+        </article>
+        <article class="case">
+          <h3>Сократил время работы с инцидентами</h3>
+          <p class="description">Внедрил проверки в восьми интеграциях от источника до витрины. Сократил время обнаружения и устранения сбоев.</p>
+          <p class="metric">−40%</p>
+        </article>
+        <article class="case">
+          <h3>Автоматизировал перезагрузку истории</h3>
+          <p class="description">Создал инструмент для типовых перезагрузок на Airflow. Dynamic Task Mapping формирует задачи для нужных периодов.</p>
+          <p class="metric">5 → 1 <span>раб. день</span></p>
+        </article>
+        <article class="case">
+          <h3>Снизил расход памяти в Spark</h3>
+          <p class="description">Оптимизировал конфигурации и снизил расход памяти исполнителей. Отдельно устранил перекос данных и сброс на диск в трёх задачах с большим объёмом shuffle.</p>
+          <p class="metric">−30%</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="stack" id="stack" aria-labelledby="stack-title">
+      <h2 id="stack-title">Стек</h2>
+      <div>
+        <p>Python, SQL, Bash, Apache Spark, PySpark, Airflow и Kafka.</p>
+        <p>Hadoop, Hive, Greenplum, PostgreSQL, Docker и GitLab CI/CD.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div class="contact wrap">
+      <div><h2>Обсудим вашу вакансию?</h2><p>Расскажите о задачах команды. На собеседовании могу пройтись по решениям из кейсов.</p></div>
+      <a class="button" href="https://t.me/malyshevamwork">Написать в Telegram</a>
+    </div>
+  </footer>
+
+  <script>
+    const canvas = document.querySelector("#flow");
+    const context = canvas.getContext("2d");
+
+    if (context) {
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+      const turn = 2 * Math.PI;
+      const colors = ["#56c6a6", "#a7f1ce", "#d9ffed", "#67bea8"];
+      const introEnds = performance.now() + 3600;
+      let inView = true;
+      let pointerInside = false;
+      let frame = 0;
+      let previous = 0;
+      let density = 1;
+      let targetX = 0;
+      let targetY = 0;
+      let rollX = 0;
+      let rollY = 0;
+
+      function draw(time) {
+        const width = canvas.width / density;
+        const height = canvas.height / density;
+        if (width < 1 || height < 1) return;
+
+        const size = Math.min(width, height) * .39;
+        const tiltX = .46 + rollY;
+        const tiltY = .78 + rollX + .12 * Math.sin(time * .28);
+        const cosX = Math.cos(tiltX);
+        const sinX = Math.sin(tiltX);
+        const cosY = Math.cos(tiltY);
+        const sinY = Math.sin(tiltY);
+        const angle = -.44;
+        const cosAngle = Math.cos(angle);
+        const sinAngle = Math.sin(angle);
+
+        function project(t, offset) {
+          const loop = 2 * t + .19 * time;
+          const wave = 3 * t + offset;
+          const radius = .93 + .31 * Math.cos(wave);
+          const x = radius * Math.cos(loop);
+          const y = radius * Math.sin(loop);
+          const z = .31 * Math.sin(wave);
+          const x1 = x * cosY + z * sinY;
+          const z1 = z * cosY - x * sinY;
+          const y1 = y * cosX - z1 * sinX;
+          const depth = y * sinX + z1 * cosX;
+          const perspective = 3.8 / (3.8 - depth);
+
+          return [
+            width * .51 + (x1 * cosAngle - y1 * sinAngle) * size * perspective,
+            height * .50 + (x1 * sinAngle + y1 * cosAngle) * size * perspective
+          ];
+        }
+
+        context.setTransform(density, 0, 0, density, 0, 0);
+        context.clearRect(0, 0, width, height);
+        context.lineWidth = .85;
+        for (let strand = 0; strand < 35; strand += 1) {
+          context.beginPath();
+          const offset = (strand / 35 - .5) * 2.4;
+          for (let step = 0; step <= 132; step += 1) {
+            const [x, y] = project(step * turn / 132, offset);
+            if (step === 0) context.moveTo(x, y);
+            else context.lineTo(x, y);
+          }
+          context.strokeStyle = colors[strand % colors.length];
+          context.globalAlpha = strand % 7 === 0 ? .66 : .27;
+          context.stroke();
+        }
+
+        context.globalAlpha = 1;
+        context.fillStyle = "#d9ffed";
+        for (let beacon = 0; beacon < 11; beacon += 1) {
+          const t = ((beacon * .589 + time * (.13 + beacon * .006)) % turn);
+          const [x, y] = project(t, (beacon / 10 - .5) * 2.16);
+          context.beginPath();
+          context.arc(x, y, beacon % 3 === 0 ? 2 : 1.1, 0, turn);
+          context.fill();
+        }
+      }
+
+      function tick(now) {
+        if (now >= introEnds && !pointerInside) {
+          frame = 0;
+          return;
+        }
+        if (now - previous >= 33) {
+          previous = now;
+          rollX += (targetX - rollX) * .1;
+          rollY += (targetY - rollY) * .1;
+          draw(now / 1000);
+        }
+        frame = requestAnimationFrame(tick);
+      }
+
+      function syncMotion() {
+        if (inView && !document.hidden && !reduceMotion.matches && (pointerInside || performance.now() < introEnds)) {
+          if (!frame) frame = requestAnimationFrame(tick);
+        } else {
+          cancelAnimationFrame(frame);
+          frame = 0;
+          if (reduceMotion.matches) {
+            rollX = rollY = 0;
+            draw(0);
+          }
+        }
+      }
+
+      function resize() {
+        const { width, height } = canvas.getBoundingClientRect();
+        density = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * density);
+        canvas.height = Math.round(height * density);
+        draw(reduceMotion.matches ? 0 : performance.now() / 1000);
+      }
+
+      canvas.addEventListener("pointerenter", (event) => {
+        if (event.pointerType !== "mouse") return;
+        pointerInside = true;
+        syncMotion();
+      });
+      canvas.addEventListener("pointermove", (event) => {
+        if (event.pointerType !== "mouse") return;
+        const box = canvas.getBoundingClientRect();
+        targetX = (event.clientX - box.left - box.width / 2) / box.width * .55;
+        targetY = (event.clientY - box.top - box.height / 2) / box.height * .42;
+      });
+      canvas.addEventListener("pointerleave", () => {
+        pointerInside = false;
+        targetX = targetY = 0;
+        syncMotion();
+      });
+      resize();
+      if ("ResizeObserver" in window) new ResizeObserver(resize).observe(canvas);
+      else window.addEventListener("resize", resize);
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(([entry]) => {
+          inView = entry.isIntersecting;
+          syncMotion();
+        }).observe(canvas);
+      }
+      reduceMotion.addEventListener("change", syncMotion);
+      document.addEventListener("visibilitychange", syncMotion);
+      syncMotion();
+    }
+  </script>
+</body>
+</html>
