@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191e1c">
+  <meta name="description" content="Малышев Андрей Максимович, Data Engineer. Рабочие кейсы и достижения в формате диалога.">
+  <title>Андрей Малышев — портфолио в диалоге</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --side: #141917;
+      --ink: #eef3ee;
+      --muted: #abb8b0;
+      --base: #191e1c;
+      --panel: #212925;
+      --bubble: #29332e;
+      --line: #39443e;
+      --accent: #cef6ac;
+      --accent-ink: #1b2c1b;
+      --gutter: clamp(1rem, 3.8vw, 3rem);
+      --reading: 50rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--base); color: var(--ink); font: 1rem/1.55 system-ui, sans-serif; }
+    h1, h2, p, figure, dl, dd { margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    [hidden] { display: none !important; }
+    .sr-only, .skip:not(:focus) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .skip:focus {
+      position: fixed;
+      z-index: 3;
+      top: .75rem;
+      left: .75rem;
+      padding: .5rem .7rem;
+      background: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    .app {
+      display: grid;
+      grid-template:
+        "side top" auto
+        "side chat" minmax(0, 1fr)
+        "side ask" auto / clamp(12.5rem, 19vw, 16rem) minmax(0, 1fr);
+      height: 100vh;
+      height: 100dvh;
+    }
+    .side {
+      grid-area: side;
+      padding: 1.65rem 1rem;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: var(--side);
+    }
+    .side-title {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      padding: 0 .5rem;
+      font-weight: 690;
+      letter-spacing: -.024em;
+    }
+    .side-mark, .avatar {
+      display: grid;
+      width: 2rem;
+      height: 2rem;
+      flex-shrink: 0;
+      place-items: center;
+      border-radius: .55rem;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-size: .875rem;
+      font-weight: 750;
+      letter-spacing: -.035em;
+    }
+    .side-label {
+      margin: 2.15rem .55rem .5rem;
+      color: var(--muted);
+      font-size: .875rem;
+    }
+    .topics { display: grid; gap: .18rem; }
+    .topic {
+      display: flex;
+      align-items: center;
+      gap: .58rem;
+      min-height: 2.75rem;
+      padding: .46rem .65rem;
+      border: 1px solid transparent;
+      border-radius: .62rem;
+      color: var(--muted);
+      font-size: .9375rem;
+      white-space: nowrap;
+    }
+    .topic::before {
+      width: .75rem;
+      height: .65rem;
+      flex-shrink: 0;
+      border: 1px solid currentColor;
+      border-radius: .23rem .23rem .23rem 0;
+      content: "";
+    }
+    .topic:hover { background: var(--panel); color: var(--ink); }
+    .topic[aria-current="true"] {
+      border-color: #52614f;
+      background: #2a382d;
+      color: var(--accent);
+      font-weight: 630;
+    }
+    .topic:focus-visible { outline-offset: -3px; }
+
+    .topbar {
+      grid-area: top;
+      display: flex;
+      min-height: 4.6rem;
+      justify-content: space-between;
+      align-items: center;
+      gap: .7rem 1.5rem;
+      padding: .8rem var(--gutter);
+      border-bottom: 1px solid var(--line);
+    }
+    h1 { font-size: clamp(1.13rem, 2.3vw, 1.5rem); line-height: 1.12; font-weight: 690; letter-spacing: -.038em; }
+    .role { color: var(--muted); font-size: .875rem; line-height: 1.3; margin-top: .22rem; }
+    .telegram {
+      display: inline-flex;
+      min-height: 2.75rem;
+      align-items: center;
+      justify-content: center;
+      padding: .5rem 1rem;
+      border-radius: .68rem;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-size: .9375rem;
+      font-weight: 690;
+      line-height: 1.28;
+      text-align: center;
+    }
+    .telegram:hover { background: #e8ffd5; }
+
+    .transcript {
+      grid-area: chat;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      scrollbar-gutter: stable;
+      scrollbar-color: #4b5b51 transparent;
+    }
+    .transcript:focus-visible { outline-offset: -3px; }
+    .reading {
+      width: min(var(--reading), calc(100% - 2 * var(--gutter)));
+      margin-inline: auto;
+    }
+    #turns { padding-block: clamp(1.45rem, 5.4vh, 3.4rem) clamp(1.5rem, 4vh, 3rem); }
+    .turn + .turn { margin-top: clamp(2.1rem, 6vw, 4rem); }
+    .question {
+      width: fit-content;
+      max-width: min(88%, 38rem);
+      margin-left: auto;
+      padding: .63rem 1rem;
+      border: 1px solid #46574c;
+      border-radius: .95rem .95rem .28rem .95rem;
+      background: var(--bubble);
+      font-weight: 550;
+      line-height: 1.4;
+      text-wrap: pretty;
+    }
+    .answer {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+      gap: .72rem;
+      margin-top: 1.2rem;
+      border-radius: .65rem;
+    }
+    .answer:focus-visible { outline-offset: .48rem; }
+    .answer-body { min-width: 0; }
+    .author { color: var(--accent); font-size: .875rem; line-height: 1.3; font-weight: 675; margin: .17rem 0 .68rem; }
+    .answer h2 {
+      max-width: 34rem;
+      margin-bottom: .55rem;
+      font-size: clamp(1.42rem, 3.2vw, 2.38rem);
+      line-height: 1.08;
+      letter-spacing: -.054em;
+      font-weight: 675;
+      text-wrap: balance;
+    }
+    .answer-body > p:not(.author) { max-width: 42rem; color: #e2e9e3; text-wrap: pretty; }
+    .answer-body > p + p { margin-top: .55rem; }
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .5rem;
+      margin-top: 1rem;
+    }
+    .facts > div {
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: flex-end;
+      gap: .24rem;
+      border: 1px solid var(--line);
+      border-radius: .7rem;
+      background: var(--panel);
+      padding: .65rem .8rem .72rem;
+    }
+    .facts dt { color: var(--muted); font-size: .875rem; line-height: 1.3; text-wrap: pretty; }
+    .facts dd {
+      color: var(--accent);
+      font-size: clamp(1.48rem, 2.8vw, 2rem);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      font-weight: 650;
+      letter-spacing: -.064em;
+    }
+    .chart {
+      max-width: 30rem;
+      display: grid;
+      gap: .52rem;
+      margin-top: 1rem;
+      padding: .75rem .9rem .95rem;
+      border: 1px solid var(--line);
+      border-radius: .75rem;
+      background: var(--panel);
+    }
+    .chart figcaption { color: var(--muted); font-size: .875rem; }
+    .chart-row { display: grid; grid-template-columns: 3.15rem minmax(0, 1fr) 2.2rem; gap: .48rem; align-items: center; font-size: .875rem; }
+    .chart-row strong { text-align: end; white-space: nowrap; }
+    .track, .bar { display: block; height: .48rem; border-radius: .12rem; }
+    .track { background: #37473b; }
+    .bar { background: #849c81; }
+    .bar.after { width: 41.6667%; background: var(--accent); }
+
+    .composer { grid-area: ask; border-top: 1px solid var(--line); background: var(--base); }
+    .composer .reading { padding-block: .75rem max(.65rem, env(safe-area-inset-bottom)); }
+    .choice-label { margin: 0 0 .38rem; color: var(--muted); font-size: .875rem; }
+    .choices {
+      display: flex;
+      gap: .45rem;
+      overflow-x: auto;
+      padding-bottom: .42rem;
+      scrollbar-color: #4b5b51 transparent;
+    }
+    .choice {
+      min-height: 2.75rem;
+      flex-shrink: 0;
+      padding: .44rem .72rem;
+      border: 1px solid #46584a;
+      border-radius: .65rem;
+      background: var(--panel);
+      color: var(--ink);
+      font-size: .875rem;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+    .choice:hover { border-color: #93b589; background: #2b3b30; }
+    .choice:focus-visible { outline-offset: -3px; }
+    .empty { min-height: 2.75rem; padding: .5rem 0; color: var(--muted); font-size: .875rem; }
+    .search {
+      display: flex;
+      align-items: center;
+      gap: .42rem;
+      margin-top: .28rem;
+      padding: .26rem;
+      border: 1px solid var(--line);
+      border-radius: .8rem;
+      background: var(--panel);
+    }
+    .search:focus-within { border-color: #9db894; }
+    .search input {
+      min-width: 0;
+      min-height: 2.65rem;
+      flex: 1;
+      padding: .38rem .55rem;
+      border: 0;
+      border-radius: .48rem;
+      background: transparent;
+      color: var(--ink);
+    }
+    .search input::placeholder { color: #a4b2a9; opacity: 1; }
+    .search input:focus { outline: 0; }
+    .search button {
+      min-height: 2.75rem;
+      padding: .35rem .7rem;
+      border: 1px solid #526650;
+      border-radius: .55rem;
+      background: #314138;
+      color: var(--accent);
+      font-size: .875rem;
+      font-weight: 650;
+    }
+    .search button:hover:not(:disabled) { background: #415746; }
+    .search button:disabled { color: #bac6bd; background: #262f2a; cursor: default; }
+    .composer-note { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .1rem .6rem; margin-top: .3rem; color: var(--muted); font-size: .8125rem; }
+    .composer-note a { display: inline-flex; min-height: 1.5rem; align-items: center; color: var(--ink); text-decoration: underline; text-underline-offset: .2em; }
+
+    @media (max-width: 50rem) {
+      .app {
+        grid-template:
+          "top" auto
+          "side" auto
+          "chat" minmax(0, 1fr)
+          "ask" auto / minmax(0, 1fr);
+      }
+      .side { padding: .35rem var(--gutter); border-right: 0; border-bottom: 1px solid var(--line); overflow: hidden; }
+      .side-title, .side-label, .topic::before { display: none; }
+      .topics { display: flex; gap: .25rem; overflow-x: auto; scrollbar-color: #4b5b51 transparent; }
+      .topic { flex-shrink: 0; }
+    }
+    @media (max-width: 34rem) {
+      :root { --gutter: .9rem; }
+      .topbar { min-height: 4rem; padding-block: .62rem; }
+      .telegram { max-width: 10.25rem; padding-inline: .56rem; font-size: .875rem; }
+      .transcript { scrollbar-gutter: auto; }
+      #turns { padding-top: 1rem; }
+      .answer { grid-template-columns: 1.65rem minmax(0, 1fr); gap: .46rem; margin-top: .95rem; }
+      .avatar { width: 1.65rem; height: 1.65rem; font-size: .77rem; }
+      .answer h2 { text-wrap: pretty; }
+      .facts > div { padding-inline: .6rem; }
+      .composer .reading { padding-top: .58rem; }
+    }
+    @media (max-height: 34rem) {
+      .app { min-height: 31rem; }
+      .composer-note { margin-top: .1rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#conversation">К диалогу</a>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <h1>Андрей Малышев</h1>
+        <p class="role" lang="en">Data Engineer</p>
+      </div>
+      <a class="telegram" href="https://t.me/malyshevamwork">Написать в Telegram</a>
+    </header>
+
+    <aside class="side">
+      <p class="side-title"><span class="side-mark" aria-hidden="true">АМ</span>Портфолио</p>
+      <p class="side-label">Темы</p>
+      <nav class="topics" id="topics" aria-label="Темы диалога"></nav>
+    </aside>
+
+    <main class="transcript" id="conversation" tabindex="0" aria-label="Диалог об опыте Андрея">
+      <div class="reading" id="turns"></div>
+      <noscript>
+        <div class="reading">
+          <p>Проектирую и сопровождаю пакетные и потоковые пайплайны. Разработал 8+ интеграций с новыми источниками, оптимизировал три Spark-задачи с суммарным shuffle более 30 ТБ и сократил объём и стоимость хранения на 20%.</p>
+          <p><a href="https://hizikgod.github.io/minimal-monochrome.html">Посмотреть кейсы списком</a></p>
+        </div>
+      </noscript>
+    </main>
+
+    <footer class="composer" id="composer" hidden>
+      <div class="reading">
+        <p class="choice-label" id="choice-label">Что спросить дальше</p>
+        <div class="choices" id="choices" role="group" aria-labelledby="choice-label"></div>
+        <p class="empty" id="empty" role="status" hidden>Ничего не нашлось. Попробуй «Spark», «стек» или «Airflow».</p>
+        <form class="search" id="question-form" role="search">
+          <label class="sr-only" for="question-input">Найти готовый вопрос</label>
+          <input id="question-input" type="search" placeholder="Найти готовый вопрос" aria-controls="choices" autocomplete="off">
+          <button type="submit" id="show-question" disabled>Показать</button>
+        </form>
+        <div class="composer-note">
+          <span>Вопросы и ответы подготовлены заранее.</span>
+          <a href="https://hizikgod.github.io/minimal-monochrome.html">Кейсы списком</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const topics = [
+      { id: "overview", title: "Обо мне", first: "experience" },
+      { id: "integrations", title: "Интеграции", first: "analytics" },
+      { id: "spark", title: "Spark", first: "large-shuffles" },
+      { id: "quality", title: "Качество данных", first: "data-checks" },
+      { id: "airflow", title: "Airflow", first: "history-reload" },
+      { id: "storage", title: "Хранилище", first: "warehouse" }
+    ];
+
+    const questions = {
+      experience: {
+        topic: "overview",
+        question: "Расскажи о своём опыте в инженерии данных",
+        title: "От источника до витрины",
+        text: ["Разрабатываю и сопровождаю пакетные и потоковые пайплайны для корпоративных хранилищ. Работал с данными в телекоме и банковских системах."],
+        facts: [
+          ["3+ года", "в разработке"],
+          ["8+", "интеграций с новыми источниками"],
+          ["30+ ТБ", "суммарный shuffle трёх оптимизированных Spark-задач"],
+          ["−20%", "к объёму и стоимости хранения данных"]
+        ],
+        tags: "стаж резюме опыт обо мне кто профиль карьера работа",
+        next: ["analytics", "large-shuffles", "stack"]
+      },
+      stack: {
+        topic: "overview",
+        question: "С каким стеком ты работаешь?",
+        title: "Python, SQL, Spark и Airflow",
+        text: [
+          "Пишу обработку на Python, SQL и PySpark, управляю загрузками через Airflow. Для потоковых интеграций работал с Kafka.",
+          "Работал с Hadoop, Hive, Greenplum и PostgreSQL. Для проверки и поставки кода использую Docker и GitLab CI/CD."
+        ],
+        tags: "стек технологии инструменты python sql pyspark kafka hadoop hive greenplum docker gitlab bash",
+        next: ["ownership", "large-shuffles", "history-reload"]
+      },
+      analytics: {
+        topic: "integrations",
+        question: "Как ты ускорил доставку веб-аналитики?",
+        title: "Данные за вчера доступны на сутки раньше",
+        text: ["Переработал пайплайн загрузки событий веб-аналитики в корпоративное хранилище. Суточный объём событий превышал 1 ТБ."],
+        chart: true,
+        tags: "интеграция веб аналитика метрика скорость ускорил доставка загрузка свежесть 12 5 тб",
+        next: ["ownership", "data-checks", "large-shuffles"]
+      },
+      ownership: {
+        topic: "integrations",
+        question: "Какие интеграции ты разработал сам?",
+        title: "Новые источники и сопровождение после запуска",
+        text: [
+          "В одном проекте спроектировал и запустил две потоковые и три пакетные интеграции. После запуска отвечал за них как технический владелец.",
+          "В другом проекте разработал ещё три интеграции с новыми источниками."
+        ],
+        tags: "количество сколько интеграций новые источники интеграция запуск пакетные потоковые batch streaming ответственность вклад 8",
+        next: ["analytics", "data-checks", "stack"]
+      },
+      "large-shuffles": {
+        topic: "spark",
+        question: "Как ты оптимизировал тяжёлые Spark-задачи?",
+        title: "Три задачи с shuffle свыше 10 ТБ каждая",
+        text: [
+          "В трёх задачах устранил перекос данных и сброс на диск при обработке. Использовал адаптивное выполнение запросов (AQE), подбирал стратегии соединения и менял разбиение на партиции."
+        ],
+        tags: "spark pyspark shuffle тб оптимизация производительность skew spill партиции соединения join aqe",
+        next: ["tuning", "stack", "warehouse"]
+      },
+      tuning: {
+        topic: "spark",
+        question: "Что изменилось после настройки Spark?",
+        title: "Меньше памяти и времени выполнения",
+        text: ["В отдельной работе оптимизировал конфигурации Spark-задач. Снизил потребление памяти и количество исполнителей, одновременно сократив суммарное время выполнения."],
+        facts: [
+          ["−30%", "память исполнителей Spark"],
+          ["−20%", "память драйверов"],
+          ["−15%", "количество исполнителей"],
+          ["−7%", "суммарное время выполнения"]
+        ],
+        tags: "spark autotuner конфигурация ресурсы память памяти исполнителей драйверов executors executor производительность настройка настройки",
+        next: ["large-shuffles", "warehouse", "data-checks"]
+      },
+      "data-checks": {
+        topic: "quality",
+        question: "Как ты работал с качеством данных?",
+        title: "Проверки в восьми интеграциях",
+        text: ["Добавил проверки по всему пути данных от источника до витрины. Время обнаружения и устранения инцидентов сократилось на 40%."],
+        tags: "качество dq data quality проверки инцидент обнаружение устранение ошибок сбои надежность мониторинг 40",
+        next: ["code-checks", "history-reload", "analytics"]
+      },
+      "code-checks": {
+        topic: "quality",
+        question: "Что ты автоматизировал в проверке кода?",
+        title: "Автоматические проверки в GitLab CI/CD",
+        text: ["Добавил линтеры и проверки качества кода в пайплайны GitLab. Участвовал в стандартизации код-ревью и правил проверки изменений."],
+        tags: "качество кода тесты линтер линтеры проверка review ревью gitlab ci cd cicd",
+        next: ["data-checks", "stack", "history-reload"]
+      },
+      "history-reload": {
+        topic: "airflow",
+        question: "Как ты автоматизировал перезагрузку истории?",
+        title: "Типовые перезагрузки на Airflow",
+        text: ["Разработал инструмент на Airflow с динамическим созданием задач (Dynamic Task Mapping). Срок закрытия типовой перезагрузки сократился с пяти до одного рабочего дня."],
+        tags: "airflow backfill история истории исторических перезагрузка налив оркестрация dag автоматизация 5 1",
+        next: ["mapping", "data-checks", "stack"]
+      },
+      mapping: {
+        topic: "airflow",
+        question: "Что делал инструмент при перезагрузке?",
+        title: "Задачи для нужных исторических периодов",
+        text: ["Airflow формировал задачи для нужных периодов во время выполнения. Это позволило использовать один и тот же процесс для типовых перезагрузок истории и убрать часть ручных операций."],
+        tags: "airflow dynamic task mapping backfill периоды инструмент механика автоматизация ручная работа",
+        next: ["history-reload", "ownership", "data-checks"]
+      },
+      warehouse: {
+        topic: "storage",
+        question: "Что ты улучшил в хранилище?",
+        title: "Доработал архитектуру хранилища",
+        text: ["Исправил архитектурные проблемы в корпоративном хранилище. Сократил объём хранимых данных и связанные с ним затраты на 20%."],
+        tags: "хранилище dwh склад хранение стоимость затраты архитектура расходы оптимизация 20",
+        next: ["migration", "tuning", "stack"]
+      },
+      migration: {
+        topic: "storage",
+        question: "Был ли у тебя опыт миграции базы?",
+        title: "С Oracle на PostgreSQL",
+        text: ["Перенёс базу портала обучения без потери данных. Адаптировал процедуры и методы приложения, затем переключил его на PostgreSQL."],
+        tags: "миграция базы перенос данных oracle postgresql переход процедура",
+        next: ["warehouse", "stack", "ownership"]
+      }
+    };
+
+    const topicById = new Map(topics.map(topic => [topic.id, topic]));
+    const threads = new Map(topics.map(topic => [topic.id, [topic.first]]));
+    const nav = document.querySelector("#topics");
+    const transcript = document.querySelector("#conversation");
+    const turns = document.querySelector("#turns");
+    const label = document.querySelector("#choice-label");
+    const choices = document.querySelector("#choices");
+    const empty = document.querySelector("#empty");
+    const input = document.querySelector("#question-input");
+    const showQuestion = document.querySelector("#show-question");
+    const stopWords = new Set(["в", "с", "на", "и", "по", "как", "ты", "вы", "что", "кто", "у", "тебя", "вас", "был", "ли", "про", "о", "расскажи"]);
+    let activeQuestion = "experience";
+    let firstMatch;
+    let focusAnswer = false;
+
+    function renderTurn(id) {
+      const item = questions[id];
+      const facts = item.facts ? `<dl class="facts">${item.facts.map(([value, meaning]) =>
+        `<div><dt>${meaning}</dt><dd>${value}</dd></div>`).join("")}</dl>` : "";
+      const chart = item.chart ? `<figure class="chart">
+        <figcaption>Среднее время доставки</figcaption>
+        <div class="chart-row"><span>До</span><span class="track" aria-hidden="true"><span class="bar"></span></span><strong>12 ч</strong></div>
+        <div class="chart-row"><span>После</span><span class="track" aria-hidden="true"><span class="bar after"></span></span><strong>5 ч</strong></div>
+      </figure>` : "";
+
+      return `<article class="turn" aria-labelledby="question-${id}">
+        <p class="question" id="question-${id}"><span class="sr-only">Вопрос: </span>${item.question}</p>
+        <div class="answer" id="answer-${id}" tabindex="-1">
+          <span class="avatar" aria-hidden="true">АМ</span>
+          <div class="answer-body">
+            <p class="author">Андрей</p>
+            <h2>${item.title}</h2>
+            ${item.text.map(paragraph => `<p>${paragraph}</p>`).join("")}
+            ${facts}${chart}
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function normalize(text) {
+      return text.toLocaleLowerCase("ru").replaceAll("ё", "е");
+    }
+
+    function renderChoices() {
+      const rawQuery = input.value.trim();
+      const terms = (normalize(rawQuery).match(/[\p{L}\p{N}+#]+/gu) || []).filter(term => !stopWords.has(term));
+      const searching = rawQuery.length > 0;
+      const matches = searching ? Object.entries(questions)
+        .map(([id, item]) => {
+          const title = normalize(item.question);
+          const tags = normalize(item.tags);
+          const score = terms.reduce((sum, term) => sum + (title.includes(term) ? 2 : tags.includes(term) ? 1 : 0), 0);
+          return { id, score };
+        })
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 4)
+        .map(item => item.id) : questions[activeQuestion].next;
+
+      firstMatch = searching ? matches[0] : undefined;
+      showQuestion.disabled = !firstMatch;
+      label.textContent = searching ? "Найденные вопросы" : "Что спросить дальше";
+      empty.hidden = matches.length > 0;
+      choices.hidden = matches.length === 0;
+      choices.innerHTML = matches.map(id => `<button type="button" class="choice" data-question="${id}">${questions[id].question}</button>`).join("");
+    }
+
+    function renderRoute() {
+      const route = location.hash.slice(1);
+      const questionId = Object.hasOwn(questions, route) ? route : undefined;
+      const topic = topicById.get(questionId ? questions[questionId].topic : route) || topics[0];
+      const thread = threads.get(topic.id);
+      activeQuestion = questionId || topic.first;
+
+      if (!thread.includes(activeQuestion)) thread.push(activeQuestion);
+      turns.innerHTML = thread.map(renderTurn).join("");
+
+      for (const link of nav.querySelectorAll("a")) {
+        if (link.hash === `#${topic.id}`) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      }
+
+      input.value = "";
+      renderChoices();
+
+      if (questionId && questionId !== topic.first) {
+        const turn = document.getElementById(`question-${questionId}`);
+        transcript.scrollTop += turn.getBoundingClientRect().top - transcript.getBoundingClientRect().top - 16;
+      } else {
+        transcript.scrollTop = 0;
+      }
+
+      if (focusAnswer) {
+        document.getElementById(`answer-${activeQuestion}`).focus({ preventScroll: true });
+        focusAnswer = false;
+      }
+    }
+
+    function ask(id) {
+      focusAnswer = true;
+      if (location.hash === `#${id}`) renderRoute();
+      else location.hash = id;
+    }
+
+    nav.innerHTML = topics.map(topic => `<a class="topic" href="#${topic.id}">${topic.title}</a>`).join("");
+    choices.addEventListener("click", (event) => {
+      const choice = event.target.closest("button[data-question]");
+      if (choice) ask(choice.dataset.question);
+    });
+    input.addEventListener("input", renderChoices);
+    document.querySelector("#question-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (firstMatch) ask(firstMatch);
+    });
+    window.addEventListener("hashchange", renderRoute);
+    document.querySelector("#composer").hidden = false;
+    renderRoute();
+  </script>
+</body>
+</html>
